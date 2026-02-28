@@ -835,14 +835,20 @@ class BaseLandScene extends Phaser.Scene {
             return;
         }
 
-        if (progressTracker.isNPCSolved(data.id)) {
-            this.dialogSystem.show(data.name, data.solved);
+        // Special handling for the Weblord boss fight — check before isNPCSolved
+        // because a prior bugged play may have marked the NPC solved without
+        // actually setting weblordDefeated
+        if (data.id === 'weblord') {
+            if (progressTracker.isWeblordDefeated()) {
+                this.dialogSystem.show(data.name, data.solved);
+                return;
+            }
+            this.startWeblordBattle(npc);
             return;
         }
 
-        // Special handling for the Weblord boss fight
-        if (data.id === 'weblord') {
-            this.startWeblordBattle(npc);
+        if (progressTracker.isNPCSolved(data.id)) {
+            this.dialogSystem.show(data.name, data.solved);
             return;
         }
 
