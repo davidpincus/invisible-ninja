@@ -840,6 +840,12 @@ class BaseLandScene extends Phaser.Scene {
             return;
         }
 
+        // Special handling for the Weblord boss fight
+        if (data.id === 'weblord') {
+            this.startWeblordBattle(npc);
+            return;
+        }
+
         this.dialogSystem.show(data.name, data.greeting, () => {
             this.dialogSystem.show(data.name, data.challenge, () => {
                 this.challengeActive = true;
@@ -864,6 +870,39 @@ class BaseLandScene extends Phaser.Scene {
                         }
                     },
                 });
+            });
+        });
+    }
+
+    startWeblordBattle(npc) {
+        const data = npc.npcData;
+        const bossData = NPC_DATA.finalBoss;
+
+        this.dialogSystem.show(data.name, bossData.intro, () => {
+            this.challengeActive = true;
+            this.scene.launch('MathChallengeScene', {
+                mode: 'boss',
+                land: this.landKey,
+                npcId: data.id,
+                npcName: data.name,
+                mathType: 'megamix',
+                onComplete: () => {
+                    this.challengeActive = false;
+                    progressTracker.setWeblordDefeated();
+                    progressTracker.earnStar(this.landKey, data.id);
+                    this.starCountText.setText(`${progressTracker.getLandStars(this.landKey)}`);
+                    if (npc.exclamation) {
+                        npc.exclamation.destroy();
+                        npc.exclamation = null;
+                    }
+                    // Delay to let MathChallengeScene close, then dance party -> throne room
+                    this.time.delayedCall(500, () => {
+                        this.cameras.main.fadeOut(500);
+                        this.cameras.main.once('camerafadeoutcomplete', () => {
+                            this.scene.start('DancePartyScene', { nextScene: 'ThroneRoomScene' });
+                        });
+                    });
+                },
             });
         });
     }
