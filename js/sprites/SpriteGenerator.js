@@ -13,6 +13,7 @@ class SpriteGenerator {
         this.generateJoystick();
         this.generateFurniture();
         this.generateCollectibles();
+        this.generatePostGameSprites();
     }
 
     // --- AXOLOTL (5 costume color palettes) ---
@@ -24,12 +25,18 @@ class SpriteGenerator {
             { suit: 0xc62828, accent: 0x2e7d32, belt: 0xffd700, mask: 0x8e0000 },        // red/green christmas
             { suit: 0xe65100, accent: 0x5d4037, belt: 0xdaa520, mask: 0xbf360c },        // orange/brown thanksgiving
             { suit: 0x9c27b0, accent: 0x00bcd4, belt: 0xffd700, mask: 0x6a1b9a },        // rainbow mega mix
+            // Post-game outfits (5-9)
+            { suit: 0xffd600, accent: 0x00897b, belt: 0xff6d00, mask: 0xe6b800 },        // hula/tropical
+            { suit: 0xb0bec5, accent: 0xffd700, belt: 0xe0e0e0, mask: 0x78909c },        // starlight
+            { suit: 0xeceff1, accent: 0x4fc3f7, belt: 0xb3e5fc, mask: 0xcfd8dc },        // snowflake
+            { suit: 0xffb300, accent: 0x6d4c41, belt: 0xff8f00, mask: 0xf57f17 },        // harvest gold
+            { suit: 0xe91e63, accent: 0x76ff03, belt: 0xff4081, mask: 0xc2185b },        // disco star
         ];
         return palettes[costume] || palettes[0];
     }
 
     generateAxolotl() {
-        for (let costume = 0; costume < 5; costume++) {
+        for (let costume = 0; costume < 10; costume++) {
             const directions = ['down', 'left', 'right', 'up'];
             directions.forEach(dir => {
                 for (let frame = 0; frame < 4; frame++) {
@@ -49,7 +56,7 @@ class SpriteGenerator {
     }
 
     generateAxolotlSwim() {
-        for (let costume = 0; costume < 5; costume++) {
+        for (let costume = 0; costume < 10; costume++) {
             const directions = ['down', 'left', 'right', 'up'];
             directions.forEach(dir => {
                 for (let frame = 0; frame < 4; frame++) {
@@ -1356,5 +1363,85 @@ class SpriteGenerator {
         for (let i = 1; i < points.length; i++) g.lineTo(points[i].x, points[i].y);
         g.closePath();
         g.strokePath();
+    }
+
+    // --- POST-GAME SPRITES ---
+    generatePostGameSprites() {
+        let g;
+
+        // Crown
+        g = this.scene.make.graphics({ add: false });
+        g.fillStyle(0xffd700);
+        g.fillRect(4, 16, 24, 12);
+        g.fillTriangle(4, 16, 8, 4, 12, 16);
+        g.fillTriangle(12, 16, 16, 0, 20, 16);
+        g.fillTriangle(20, 16, 24, 4, 28, 16);
+        g.fillStyle(0xff1744);
+        g.fillCircle(8, 10, 2);
+        g.fillStyle(0x2196f3);
+        g.fillCircle(16, 6, 2);
+        g.fillStyle(0x4caf50);
+        g.fillCircle(24, 10, 2);
+        g.generateTexture('crown', 32, 28);
+        g.destroy();
+
+        // Costume chest
+        g = this.scene.make.graphics({ add: false });
+        g.fillStyle(0x9c27b0);
+        g.fillRoundedRect(0, 8, 40, 24, 4);
+        g.fillStyle(0xba68c8);
+        g.fillRoundedRect(0, 0, 40, 18, { tl: 6, tr: 6, bl: 0, br: 0 });
+        g.fillStyle(0xffd700);
+        g.fillRect(0, 16, 40, 4);
+        g.fillRoundedRect(14, 12, 12, 10, 3);
+        g.fillStyle(0xffeb3b);
+        g.fillCircle(20, 17, 4);
+        g.generateTexture('costume_chest', 40, 32);
+        g.destroy();
+
+        // Halloween pumpkin collectible
+        g = this.scene.make.graphics({ add: false });
+        g.fillStyle(0xff8f00);
+        g.fillEllipse(10, 12, 16, 16);
+        g.fillStyle(0xf57f17);
+        g.fillEllipse(10, 12, 10, 14);
+        g.fillStyle(0x33691e);
+        g.fillRect(8, 2, 4, 5);
+        g.fillStyle(0xffd700, 0.8);
+        g.fillTriangle(5, 9, 7, 6, 9, 9);
+        g.fillTriangle(11, 9, 13, 6, 15, 9);
+        g.beginPath();
+        g.arc(10, 14, 4, 0, Math.PI);
+        g.fillPath();
+        g.generateTexture('halloween_pumpkin', 20, 22);
+        g.destroy();
+
+        // Halloween ghost collectible
+        g = this.scene.make.graphics({ add: false });
+        g.fillStyle(0xffffff, 0.9);
+        g.fillCircle(10, 8, 8);
+        g.fillRect(2, 8, 16, 12);
+        g.fillCircle(5, 20, 3);
+        g.fillCircle(10, 18, 3);
+        g.fillCircle(15, 20, 3);
+        g.fillStyle(0x1a1a1a);
+        g.fillCircle(7, 7, 2);
+        g.fillCircle(13, 7, 2);
+        g.fillEllipse(10, 12, 4, 3);
+        g.generateTexture('halloween_ghost', 20, 24);
+        g.destroy();
+
+        // Halloween candy collectible
+        g = this.scene.make.graphics({ add: false });
+        g.fillStyle(0xff6b6b);
+        g.fillCircle(10, 10, 6);
+        g.fillStyle(0xffffff);
+        g.fillRect(7, 8, 2, 4);
+        g.fillRect(11, 8, 2, 4);
+        g.fillStyle(0xff6b6b);
+        g.fillTriangle(3, 10, 0, 6, 0, 14);
+        g.fillTriangle(17, 10, 20, 6, 20, 14);
+        g.generateTexture('halloween_candy', 20, 20);
+        g.destroy();
     }
 }

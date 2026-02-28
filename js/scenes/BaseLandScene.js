@@ -57,6 +57,11 @@ class BaseLandScene extends Phaser.Scene {
         this.input.keyboard.on('keydown-A', () => this.toggleInvisibility());
 
         this.createParticles();
+
+        // Post-game content (outfits + halloween eggs)
+        if (progressTracker.isCrownObtained()) {
+            this.createPostGameContent();
+        }
     }
 
     // --- INVISIBILITY SYSTEM ---
@@ -547,6 +552,7 @@ class BaseLandScene extends Phaser.Scene {
         this.checkSwimming();
         this.updateSpiders();
         this.updateCollectibles();
+        this.updatePostGameContent();
 
         // Auto-trigger spider if close and visible
         if (this.nearSpider && !this.isInvisible && this.nearSpider.detected) {
@@ -628,6 +634,195 @@ class BaseLandScene extends Phaser.Scene {
             this.talkHint.list[1].setText('Enter');
         } else {
             this.talkHint.setVisible(false);
+        }
+    }
+
+    // --- POST-GAME CONTENT ---
+    createPostGameContent() {
+        const pgData = {
+            easter: {
+                chest: { x: 1000, y: 600 }, costumeIndex: 5, costumeName: 'Hula Ninja',
+                costumeDesc: 'A tropical outfit with sunny colors! Perfect for island adventures!',
+                eggs: [
+                    { id: 'hw_easter_1', x: 200, y: 1200, type: 'halloween_pumpkin' },
+                    { id: 'hw_easter_2', x: 1800, y: 600, type: 'halloween_ghost' },
+                    { id: 'hw_easter_3', x: 1200, y: 1500, type: 'halloween_candy' },
+                ],
+            },
+            hannukah: {
+                chest: { x: 1100, y: 700 }, costumeIndex: 6, costumeName: 'Starlight Ninja',
+                costumeDesc: 'A shimmering silver outfit that sparkles like starlight! So fancy!',
+                eggs: [
+                    { id: 'hw_hannukah_1', x: 300, y: 500, type: 'halloween_pumpkin' },
+                    { id: 'hw_hannukah_2', x: 1700, y: 800, type: 'halloween_ghost' },
+                    { id: 'hw_hannukah_3', x: 1000, y: 1300, type: 'halloween_candy' },
+                ],
+            },
+            christmas: {
+                chest: { x: 1000, y: 600 }, costumeIndex: 7, costumeName: 'Snow Ninja',
+                costumeDesc: 'A frosty white outfit that glitters like fresh snow! Brrrr-illiant!',
+                eggs: [
+                    { id: 'hw_christmas_1', x: 400, y: 400, type: 'halloween_pumpkin' },
+                    { id: 'hw_christmas_2', x: 1800, y: 900, type: 'halloween_ghost' },
+                    { id: 'hw_christmas_3', x: 800, y: 1400, type: 'halloween_candy' },
+                ],
+            },
+            thanksgiving: {
+                chest: { x: 1000, y: 600 }, costumeIndex: 8, costumeName: 'Golden Ninja',
+                costumeDesc: 'A gorgeous golden outfit fit for a harvest queen! Absolutely radiant!',
+                eggs: [
+                    { id: 'hw_thanksgiving_1', x: 600, y: 300, type: 'halloween_pumpkin' },
+                    { id: 'hw_thanksgiving_2', x: 2000, y: 600, type: 'halloween_ghost' },
+                    { id: 'hw_thanksgiving_3', x: 1500, y: 1300, type: 'halloween_candy' },
+                ],
+            },
+            megamix: {
+                chest: { x: 1600, y: 700 }, costumeIndex: 9, costumeName: 'Disco Ninja',
+                costumeDesc: 'A dazzling disco outfit with neon colors! Time to dance!',
+                eggs: [
+                    { id: 'hw_megamix_1', x: 500, y: 400, type: 'halloween_pumpkin' },
+                    { id: 'hw_megamix_2', x: 2800, y: 500, type: 'halloween_ghost' },
+                    { id: 'hw_megamix_3', x: 1200, y: 2000, type: 'halloween_candy' },
+                ],
+            },
+        };
+
+        this.pgLandData = pgData[this.landKey];
+        if (!this.pgLandData) return;
+
+        // Costume chest
+        this.costumeChest = null;
+        if (!progressTracker.hasPostGameOutfit(this.landKey)) {
+            const cx = this.pgLandData.chest.x;
+            const cy = this.pgLandData.chest.y;
+            const chest = this.add.image(cx, cy, 'costume_chest').setDepth(85);
+            this.tweens.add({
+                targets: chest, scale: 1.1, duration: 800,
+                yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
+            });
+            const label = this.add.text(cx, cy - 24, 'Outfit!', {
+                fontFamily: 'Arial, sans-serif', fontSize: '12px', fontStyle: 'bold',
+                color: '#ffd700', stroke: '#000000', strokeThickness: 2,
+            }).setOrigin(0.5).setDepth(86);
+            this.tweens.add({
+                targets: label, y: cy - 28, duration: 500,
+                yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
+            });
+            this.costumeChest = { sprite: chest, label: label };
+        }
+
+        // Halloween eggs
+        this.halloweenEggSprites = [];
+        this.pgLandData.eggs.forEach(egg => {
+            if (progressTracker.hasHalloweenEgg(egg.id)) return;
+            const sprite = this.add.image(egg.x, egg.y, egg.type).setDepth(85);
+            sprite.eggData = egg;
+            this.tweens.add({
+                targets: sprite, alpha: 0.6, duration: 800,
+                yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
+            });
+            this.halloweenEggSprites.push(sprite);
+        });
+    }
+
+    updatePostGameContent() {
+        if (!this.pgLandData) return;
+
+        // Costume chest proximity
+        if (this.costumeChest) {
+            const cx = this.pgLandData.chest.x;
+            const cy = this.pgLandData.chest.y;
+            const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, cx, cy);
+            if (dist < 50) {
+                this.openCostumeChest();
+            }
+        }
+
+        // Halloween egg proximity
+        if (this.halloweenEggSprites) {
+            this.halloweenEggSprites.forEach(sprite => {
+                if (!sprite.active) return;
+                const dist = Phaser.Math.Distance.Between(this.player.x, this.player.y, sprite.x, sprite.y);
+                if (dist < 40) {
+                    this.collectHalloweenEgg(sprite);
+                }
+            });
+        }
+    }
+
+    openCostumeChest() {
+        if (!this.costumeChest) return;
+        const pgData = this.pgLandData;
+        progressTracker.collectPostGameOutfit(this.landKey, pgData.costumeIndex);
+        this.currentCostume = pgData.costumeIndex;
+
+        // Animate chest
+        this.tweens.add({
+            targets: this.costumeChest.sprite,
+            y: this.costumeChest.sprite.y - 30, alpha: 0, scale: 1.5,
+            duration: 400,
+            onComplete: () => {
+                this.costumeChest.sprite.destroy();
+                this.costumeChest.label.destroy();
+            },
+        });
+
+        // Sparkle burst
+        const cx = pgData.chest.x;
+        const cy = pgData.chest.y;
+        for (let i = 0; i < 10; i++) {
+            const sparkle = this.add.image(
+                cx + (Math.random() - 0.5) * 40,
+                cy + (Math.random() - 0.5) * 30,
+                'sparkle'
+            ).setDepth(200).setTint(0xffd700);
+            this.tweens.add({
+                targets: sparkle, alpha: 0, scale: 0, y: sparkle.y - 30,
+                duration: 500, delay: i * 40,
+                onComplete: () => sparkle.destroy(),
+            });
+        }
+
+        this.dialogSystem.show('New Outfit!',
+            `You found the ${pgData.costumeName} outfit! ${pgData.costumeDesc}`, () => {
+                this.checkPostGameCompletion();
+            });
+
+        this.costumeChest = null;
+    }
+
+    collectHalloweenEgg(sprite) {
+        const data = sprite.eggData;
+        progressTracker.collectHalloweenEgg(data.id);
+
+        this.tweens.add({
+            targets: sprite, y: sprite.y - 30, alpha: 0, scale: 1.5,
+            duration: 400, onComplete: () => sprite.destroy(),
+        });
+        this.halloweenEggSprites = this.halloweenEggSprites.filter(s => s !== sprite);
+
+        for (let i = 0; i < 6; i++) {
+            const sparkle = this.add.image(
+                sprite.x + (Math.random() - 0.5) * 30,
+                sprite.y + (Math.random() - 0.5) * 20,
+                'sparkle_small'
+            ).setDepth(200).setTint(0xff8f00);
+            this.tweens.add({
+                targets: sparkle, alpha: 0, scale: 0, y: sparkle.y - 20,
+                duration: 400, delay: i * 50,
+                onComplete: () => sparkle.destroy(),
+            });
+        }
+
+        this.checkPostGameCompletion();
+    }
+
+    checkPostGameCompletion() {
+        if (progressTracker.isPostGameComplete()) {
+            this.time.delayedCall(500, () => {
+                this.dialogSystem.show('Amazing!',
+                    'You found ALL the outfits and ALL the hidden treats! Head back to the World Map for the GRAND CELEBRATION!');
+            });
         }
     }
 

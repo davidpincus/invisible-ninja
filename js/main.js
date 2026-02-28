@@ -27,6 +27,10 @@ const config = {
         ChristmasIslandScene,
         ThanksgivingIslandScene,
         MegaMixIslandScene,
+        HalloweenPalaceScene,
+        DancePartyScene,
+        ThroneRoomScene,
+        VictoryScene,
         MathChallengeScene,
         HouseInteriorScene
     ]

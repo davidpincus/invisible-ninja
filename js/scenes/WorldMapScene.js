@@ -60,11 +60,22 @@ class WorldMapScene extends Phaser.Scene {
         this.createLandIcon(500, 500, 'thanksgiving', 'icon_thanksgiving', 'Thanksgiving\nIsland', 'ThanksgivingIslandScene');
         this.createLandIcon(500, 660, 'megamix', 'icon_megamix', 'Mega Mix\nIsland', 'MegaMixIslandScene');
 
+        // Halloween Palace (after Weblord defeated)
+        if (progressTracker.isWeblordDefeated()) {
+            this.drawPath(pathG, 500, 650, 800, 600);
+            this.createLandIcon(800, 600, 'halloween', 'icon_halloween', "Halloween\nPalace", 'HalloweenPalaceScene');
+        }
+
         // Back button
         this.createBackButton();
 
         // Unlock info
         this.createUnlockInfo();
+
+        // Grand Celebration button (when post-game is complete)
+        if (progressTracker.isPostGameComplete() && !progressTracker.isFinalVictory()) {
+            this.createCelebrationButton();
+        }
 
         // Costume selector (if multiple unlocked)
         const costumes = progressTracker.getCostumesUnlocked();
@@ -164,8 +175,18 @@ class WorldMapScene extends Phaser.Scene {
             nextUnlock = `${Math.max(0, 42 - total)} more stars to unlock Mega Mix Island!`;
         } else if (!progressTracker.isWeblordDefeated()) {
             nextUnlock = "All islands unlocked! Find The Weblord on Mega Mix Island!";
+        } else if (!progressTracker.isHalloweenPalaceCompleted()) {
+            nextUnlock = "Visit The Weblord's Halloween Palace for a spooky challenge!";
+        } else if (!progressTracker.isCrownObtained()) {
+            nextUnlock = "The Halloween Palace awaits your return!";
+        } else if (!progressTracker.isPostGameComplete()) {
+            const outfits = progressTracker.getPostGameOutfitCount();
+            const eggs = progressTracker.getHalloweenEggCount();
+            nextUnlock = `Explore! Outfits: ${outfits}/5 | Hidden treats: ${eggs}/15`;
+        } else if (!progressTracker.isFinalVictory()) {
+            nextUnlock = "You found everything! Time for the Grand Celebration!";
         } else {
-            nextUnlock = "You defeated The Weblord! You're the ultimate ninja!";
+            nextUnlock = "You completed the ENTIRE adventure! You're the ultimate ninja!";
         }
 
         if (nextUnlock) {
@@ -179,9 +200,33 @@ class WorldMapScene extends Phaser.Scene {
         }
     }
 
+    createCelebrationButton() {
+        const w = this.cameras.main.width;
+        const btn = this.add.container(w / 2, 660);
+        const bg = this.add.image(0, 0, 'button_green').setScale(1.5, 1.2);
+        const text = this.add.text(0, -2, 'Grand Celebration!', {
+            fontFamily: 'Arial, sans-serif', fontSize: '24px', fontStyle: 'bold', color: '#ffffff',
+        }).setOrigin(0.5);
+        btn.add([bg, text]);
+        bg.setInteractive({ useHandCursor: true });
+
+        this.tweens.add({
+            targets: btn, scale: 1.05, duration: 600,
+            yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
+        });
+
+        bg.on('pointerdown', () => {
+            this.cameras.main.fadeOut(400);
+            this.cameras.main.once('camerafadeoutcomplete', () => {
+                this.scene.start('DancePartyScene', { nextScene: 'VictoryScene' });
+            });
+        });
+    }
+
     createCostumeSelector() {
         const costumes = progressTracker.getCostumesUnlocked();
-        const names = ['Black Ninja', 'Blue Ninja', 'Red Ninja', 'Harvest Ninja', 'Rainbow Ninja'];
+        const names = ['Black Ninja', 'Blue Ninja', 'Red Ninja', 'Harvest Ninja', 'Rainbow Ninja',
+            'Hula Ninja', 'Starlight Ninja', 'Snow Ninja', 'Golden Ninja', 'Disco Ninja'];
         const current = progressTracker.getCurrentCostume();
 
         const y = 730;

@@ -798,5 +798,35 @@ class TileGenerator {
         g.strokeCircle(48, 48, 44);
         g.generateTexture('icon_weblord_lair', 96, 96);
         g.destroy();
+
+        // Halloween Palace icon
+        g = this.scene.make.graphics({ add: false });
+        // Dark purple circle base
+        g.fillStyle(0x1a0a2e);
+        g.fillCircle(48, 48, 44);
+        g.fillStyle(0x4a148c);
+        g.fillCircle(48, 48, 38);
+        // Castle silhouette
+        g.fillStyle(0x0d0518);
+        g.fillRect(32, 28, 32, 30);
+        g.fillRect(26, 22, 12, 36);
+        g.fillRect(58, 22, 12, 36);
+        g.fillTriangle(26, 22, 32, 14, 38, 22);
+        g.fillTriangle(58, 22, 64, 14, 70, 22);
+        g.fillTriangle(42, 28, 48, 18, 54, 28);
+        // Glowing windows
+        g.fillStyle(0xffa000, 0.8);
+        g.fillRect(40, 34, 5, 7);
+        g.fillRect(51, 34, 5, 7);
+        // Pumpkin at door
+        g.fillStyle(0xff8f00);
+        g.fillCircle(48, 56, 4);
+        g.fillStyle(0x33691e);
+        g.fillRect(47, 51, 2, 3);
+        // Orange border
+        g.lineStyle(3, 0xff8f00);
+        g.strokeCircle(48, 48, 44);
+        g.generateTexture('icon_halloween', 96, 96);
+        g.destroy();
     }
 }

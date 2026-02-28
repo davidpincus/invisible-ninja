@@ -144,6 +144,36 @@ const MATH_PROBLEMS = {
                 op: 'divide', range: [2, 8]
             },
         ],
+        halloween: [
+            {
+                template: (a, b) => ({
+                    q: `The Weblord has ${a} jars of spiders with ${b} spiders in each jar. How many spiders does he have in total?`,
+                    a: a * b
+                }),
+                op: 'multiply', range: [3, 9]
+            },
+            {
+                template: (a, b) => ({
+                    q: `There are ${a + b} ghosts haunting the palace. ${b} of them got scared and flew away! How many ghosts are left?`,
+                    a: a
+                }),
+                op: 'subtract', range: [5, 25]
+            },
+            {
+                template: (a, b) => ({
+                    q: `The Weblord baked ${a * b} spooky cookies and wants to share them equally among ${a} trick-or-treaters. How many cookies does each one get?`,
+                    a: b
+                }),
+                op: 'divide', range: [3, 9]
+            },
+            {
+                template: (a, b) => ({
+                    q: `${a} pumpkins each have ${b} candles inside. How many candles are glowing in total?`,
+                    a: a * b
+                }),
+                op: 'multiply', range: [4, 8]
+            },
+        ],
         megamix: [
             {
                 template: (a, b) => ({

@@ -22,6 +22,11 @@ class ProgressTracker {
             currentCostume: 0,
             collectibleBonuses: [],
             weblordDefeated: false,
+            halloweenPalaceCompleted: false,
+            crownObtained: false,
+            postGameOutfits: [],    // land keys where outfit was found
+            halloweenEggs: [],      // halloween egg IDs found
+            finalVictory: false,
             playerName: 'Madeline',
         };
     }
@@ -167,11 +172,81 @@ class ProgressTracker {
 
     setWeblordDefeated() {
         this.data.weblordDefeated = true;
+        if (!this.data.unlockedLands.includes('halloween')) {
+            this.data.unlockedLands.push('halloween');
+        }
         this.save();
     }
 
     isWeblordDefeated() {
         return this.data.weblordDefeated;
+    }
+
+    // --- HALLOWEEN PALACE ---
+    setHalloweenPalaceCompleted() {
+        this.data.halloweenPalaceCompleted = true;
+        this.save();
+    }
+
+    isHalloweenPalaceCompleted() {
+        return this.data.halloweenPalaceCompleted;
+    }
+
+    // --- CROWN ---
+    setCrownObtained() {
+        this.data.crownObtained = true;
+        this.save();
+    }
+
+    isCrownObtained() {
+        return this.data.crownObtained;
+    }
+
+    // --- POST-GAME OUTFITS ---
+    collectPostGameOutfit(landKey, costumeIndex) {
+        if (this.data.postGameOutfits.includes(landKey)) return false;
+        this.data.postGameOutfits.push(landKey);
+        this.unlockCostume(costumeIndex);
+        this.save();
+        return true;
+    }
+
+    hasPostGameOutfit(landKey) {
+        return this.data.postGameOutfits.includes(landKey);
+    }
+
+    getPostGameOutfitCount() {
+        return this.data.postGameOutfits.length;
+    }
+
+    // --- HALLOWEEN EGGS ---
+    collectHalloweenEgg(eggId) {
+        if (this.data.halloweenEggs.includes(eggId)) return false;
+        this.data.halloweenEggs.push(eggId);
+        this.save();
+        return true;
+    }
+
+    hasHalloweenEgg(eggId) {
+        return this.data.halloweenEggs.includes(eggId);
+    }
+
+    getHalloweenEggCount() {
+        return this.data.halloweenEggs.length;
+    }
+
+    // --- FINAL VICTORY ---
+    isPostGameComplete() {
+        return this.data.postGameOutfits.length >= 5 && this.data.halloweenEggs.length >= 15;
+    }
+
+    setFinalVictory() {
+        this.data.finalVictory = true;
+        this.save();
+    }
+
+    isFinalVictory() {
+        return this.data.finalVictory;
     }
 
     // --- GENERAL ---
