@@ -32,12 +32,176 @@ class SpriteGenerator {
             { suit: 0xeceff1, accent: 0x4fc3f7, belt: 0xb3e5fc, mask: 0xcfd8dc },        // snowflake
             { suit: 0xffb300, accent: 0x6d4c41, belt: 0xff8f00, mask: 0xf57f17 },        // harvest gold
             { suit: 0xe91e63, accent: 0x76ff03, belt: 0xff4081, mask: 0xc2185b },        // disco star
+            { suit: 0xdaa520, accent: 0x6a1b9a, belt: 0xffd700, mask: 0xb8860b },        // royal
         ];
         return palettes[costume] || palettes[0];
     }
 
+    getHatStyle(costume) {
+        const styles = [
+            'ninja_hood',     // 0: Black Ninja
+            'kippah',         // 1: Hannukah
+            'santa_hat',      // 2: Christmas
+            'pilgrim_hat',    // 3: Thanksgiving
+            'party_hat',      // 4: Rainbow/Mega Mix
+            'flower_crown',   // 5: Hula/Tropical
+            'star_tiara',     // 6: Starlight
+            'icicle_crown',   // 7: Snowflake
+            'wheat_wreath',   // 8: Harvest Gold
+            'disco_headband', // 9: Disco Star
+            'gold_crown',     // 10: Royal
+        ];
+        return styles[costume] || styles[0];
+    }
+
+    _drawHat(g, direction, costume, cx, cy, s, bounce, swimBob) {
+        const pal = this.getCostumePalette(costume);
+        const hat = this.getHatStyle(costume);
+        const hy = cy - 22 * s + bounce + swimBob; // hat base Y (top of head)
+
+        switch (hat) {
+            case 'ninja_hood':
+                // Pointed ninja hood peak
+                g.fillStyle(pal.mask);
+                g.fillTriangle(cx, hy - 8 * s, cx - 6 * s, hy + 2 * s, cx + 6 * s, hy + 2 * s);
+                g.fillStyle(pal.accent, 0.6);
+                g.fillTriangle(cx, hy - 6 * s, cx - 3 * s, hy + 1 * s, cx + 3 * s, hy + 1 * s);
+                break;
+
+            case 'kippah':
+                // Small rounded cap
+                g.fillStyle(pal.suit);
+                g.fillEllipse(cx, hy, 12 * s, 6 * s);
+                g.fillStyle(pal.accent, 0.5);
+                g.fillEllipse(cx, hy, 8 * s, 3 * s);
+                break;
+
+            case 'santa_hat':
+                // Floppy red hat with white trim and pompom
+                g.fillStyle(pal.suit);
+                g.fillTriangle(cx - 6 * s, hy + 2 * s, cx + 10 * s, hy - 8 * s, cx + 6 * s, hy + 2 * s);
+                // White trim band
+                g.fillStyle(0xffffff);
+                g.fillRect(cx - 8 * s, hy, 16 * s, 3 * s);
+                // Pompom
+                g.fillCircle(cx + 10 * s, hy - 8 * s, 2.5 * s);
+                break;
+
+            case 'pilgrim_hat':
+                // Tall hat with buckle
+                g.fillStyle(pal.mask);
+                g.fillRect(cx - 5 * s, hy - 8 * s, 10 * s, 10 * s);
+                // Brim
+                g.fillRect(cx - 8 * s, hy + 1 * s, 16 * s, 2 * s);
+                // Buckle
+                g.fillStyle(pal.belt);
+                g.fillRect(cx - 2 * s, hy - 3 * s, 4 * s, 4 * s);
+                break;
+
+            case 'party_hat':
+                // Cone with rainbow stripes
+                g.fillStyle(pal.suit);
+                g.fillTriangle(cx, hy - 10 * s, cx - 6 * s, hy + 2 * s, cx + 6 * s, hy + 2 * s);
+                // Stripes
+                const stripeColors = [0xff0000, 0xff8800, 0xffff00, 0x00cc00, 0x0088ff];
+                stripeColors.forEach((c, i) => {
+                    g.fillStyle(c, 0.6);
+                    g.fillRect(cx - (5 - i) * s, hy - (8 - i * 2) * s, (10 - i * 2) * s, 2 * s);
+                });
+                // Pompom on top
+                g.fillStyle(0xffd700);
+                g.fillCircle(cx, hy - 10 * s, 2 * s);
+                break;
+
+            case 'flower_crown':
+                // Ring of flowers
+                g.fillStyle(0x2e7d32);
+                g.fillEllipse(cx, hy + 1 * s, 16 * s, 4 * s);
+                const flowerColors = [0xff69b4, 0xff1493, 0xffa500, 0xffff00, 0xff4500];
+                for (let i = 0; i < 5; i++) {
+                    const angle = (i / 5) * Math.PI - Math.PI / 2;
+                    const fx = cx + Math.cos(angle) * 6 * s;
+                    const fy = hy + Math.sin(angle) * 2 * s;
+                    g.fillStyle(flowerColors[i]);
+                    g.fillCircle(fx, fy, 2 * s);
+                    g.fillStyle(0xffff00);
+                    g.fillCircle(fx, fy, 1 * s);
+                }
+                break;
+
+            case 'star_tiara':
+                // Thin band with star points
+                g.fillStyle(pal.accent);
+                g.fillRect(cx - 8 * s, hy + 1 * s, 16 * s, 2 * s);
+                // Star points
+                g.fillStyle(0xffd700);
+                g.fillTriangle(cx, hy - 6 * s, cx - 2 * s, hy + 1 * s, cx + 2 * s, hy + 1 * s);
+                g.fillTriangle(cx - 5 * s, hy - 3 * s, cx - 7 * s, hy + 1 * s, cx - 3 * s, hy + 1 * s);
+                g.fillTriangle(cx + 5 * s, hy - 3 * s, cx + 3 * s, hy + 1 * s, cx + 7 * s, hy + 1 * s);
+                break;
+
+            case 'icicle_crown':
+                // Ice-blue band with icicle points
+                g.fillStyle(pal.accent);
+                g.fillRect(cx - 8 * s, hy + 1 * s, 16 * s, 2 * s);
+                // Icicles pointing up
+                g.fillStyle(0xb3e5fc, 0.8);
+                for (let i = -3; i <= 3; i++) {
+                    const ix = cx + i * 2 * s;
+                    const ih = (3 - Math.abs(i)) * 2 * s + 2 * s;
+                    g.fillTriangle(ix, hy - ih, ix - 1 * s, hy + 1 * s, ix + 1 * s, hy + 1 * s);
+                }
+                break;
+
+            case 'wheat_wreath':
+                // Golden ring with wheat sprigs
+                g.fillStyle(pal.belt);
+                g.fillEllipse(cx, hy + 1 * s, 16 * s, 5 * s);
+                g.fillStyle(pal.mask, 0.7);
+                g.fillEllipse(cx, hy + 1 * s, 12 * s, 3 * s);
+                // Wheat sprigs
+                g.fillStyle(0xdaa520);
+                g.fillEllipse(cx - 5 * s, hy - 2 * s, 2 * s, 4 * s);
+                g.fillEllipse(cx + 5 * s, hy - 2 * s, 2 * s, 4 * s);
+                g.fillEllipse(cx, hy - 3 * s, 2 * s, 3 * s);
+                break;
+
+            case 'disco_headband':
+                // Thin band with a mini disco ball
+                g.fillStyle(pal.belt);
+                g.fillRect(cx - 8 * s, hy + 1 * s, 16 * s, 2 * s);
+                // Disco ball
+                g.fillStyle(0xe0e0e0);
+                g.fillCircle(cx, hy - 2 * s, 3 * s);
+                g.fillStyle(0xffffff, 0.6);
+                g.fillCircle(cx - 1 * s, hy - 3 * s, 1 * s);
+                g.fillStyle(pal.accent, 0.5);
+                g.fillCircle(cx + 1 * s, hy - 1 * s, 1 * s);
+                break;
+
+            case 'gold_crown':
+                // Regal crown with gems
+                g.fillStyle(0xffd700);
+                g.fillRect(cx - 7 * s, hy - 2 * s, 14 * s, 5 * s);
+                // Crown points
+                g.fillTriangle(cx - 6 * s, hy - 7 * s, cx - 8 * s, hy - 2 * s, cx - 4 * s, hy - 2 * s);
+                g.fillTriangle(cx, hy - 9 * s, cx - 3 * s, hy - 2 * s, cx + 3 * s, hy - 2 * s);
+                g.fillTriangle(cx + 6 * s, hy - 7 * s, cx + 4 * s, hy - 2 * s, cx + 8 * s, hy - 2 * s);
+                // Gems
+                g.fillStyle(0xff1744);
+                g.fillCircle(cx, hy - 6 * s, 1.5 * s);
+                g.fillStyle(0x2196f3);
+                g.fillCircle(cx - 5 * s, hy - 4 * s, 1 * s);
+                g.fillCircle(cx + 5 * s, hy - 4 * s, 1 * s);
+                // Gold band rim
+                g.fillStyle(0xffb300);
+                g.fillRect(cx - 7 * s, hy + 2 * s, 14 * s, 1 * s);
+                break;
+        }
+    }
+
     generateAxolotl() {
-        for (let costume = 0; costume < 10; costume++) {
+        for (let costume = 0; costume < 11; costume++) {
             const directions = ['down', 'left', 'right', 'up'];
             directions.forEach(dir => {
                 for (let frame = 0; frame < 4; frame++) {
@@ -65,7 +229,7 @@ class SpriteGenerator {
     }
 
     generateAxolotlSwim() {
-        for (let costume = 0; costume < 10; costume++) {
+        for (let costume = 0; costume < 11; costume++) {
             const directions = ['down', 'left', 'right', 'up'];
             directions.forEach(dir => {
                 for (let frame = 0; frame < 4; frame++) {
@@ -213,6 +377,9 @@ class SpriteGenerator {
             g.fillStyle(0xf48fb1);
             g.fillEllipse(cx, cy - 12 * s + bounce + swimBob, 18 * s, 14 * s);
         }
+
+        // Hat
+        this._drawHat(g, direction, costume, cx, cy, s, bounce, swimBob);
 
         // Little feet/legs
         if (!swimming) {

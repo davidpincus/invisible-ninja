@@ -63,7 +63,9 @@ class WorldMapScene extends Phaser.Scene {
         // Halloween Palace (after Weblord defeated)
         if (progressTracker.isWeblordDefeated()) {
             this.drawPath(pathG, 500, 650, 800, 600);
-            this.createLandIcon(800, 600, 'halloween', 'icon_halloween', "Halloween\nPalace", 'HalloweenPalaceScene');
+            const halloweenTarget = progressTracker.isHalloweenPalaceCompleted()
+                ? 'PalaceLandScene' : 'HalloweenPalaceScene';
+            this.createLandIcon(800, 600, 'halloween', 'icon_halloween', "Halloween\nPalace", halloweenTarget);
         }
 
         // Back button
@@ -226,7 +228,7 @@ class WorldMapScene extends Phaser.Scene {
     createCostumeSelector() {
         const costumes = progressTracker.getCostumesUnlocked();
         const names = ['Black Ninja', 'Blue Ninja', 'Red Ninja', 'Harvest Ninja', 'Rainbow Ninja',
-            'Hula Ninja', 'Starlight Ninja', 'Snow Ninja', 'Golden Ninja', 'Disco Ninja'];
+            'Hula Ninja', 'Starlight Ninja', 'Snow Ninja', 'Golden Ninja', 'Disco Ninja', 'Royal Ninja'];
         const current = progressTracker.getCurrentCostume();
 
         const y = 730;

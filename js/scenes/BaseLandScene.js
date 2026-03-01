@@ -16,8 +16,8 @@ class BaseLandScene extends Phaser.Scene {
     create() {
         this.cameras.main.fadeIn(500);
 
-        this.mapWidth = 2400;
-        this.mapHeight = 1800;
+        this.mapWidth = this.mapWidth || 2400;
+        this.mapHeight = this.mapHeight || 1800;
         this.physics.world.setBounds(0, 0, this.mapWidth, this.mapHeight);
 
         // Track water zones for swimming detection

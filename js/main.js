@@ -32,7 +32,9 @@ const config = {
         ThroneRoomScene,
         VictoryScene,
         MathChallengeScene,
-        HouseInteriorScene
+        HouseInteriorScene,
+        PalaceLandScene,
+        PalaceInteriorScene
     ]
 };
 
