@@ -756,6 +756,24 @@ class BaseLandScene extends Phaser.Scene {
         progressTracker.collectPostGameOutfit(this.landKey, pgData.costumeIndex);
         this.currentCostume = pgData.costumeIndex;
 
+        // Immediately update the player's appearance
+        const prefix = this.isSwimming ? 'axolotl_swim_' : 'axolotl_';
+        this.player.setTexture(`${prefix}${this.currentCostume}_${this.playerDir}_${this.playerFrame}`);
+
+        // Costume change sparkles on the player
+        for (let i = 0; i < 12; i++) {
+            const angle = (i / 12) * Math.PI * 2;
+            const ps = this.add.image(this.player.x, this.player.y, 'sparkle')
+                .setScale(0.8).setDepth(200).setTint(0xffd700);
+            this.tweens.add({
+                targets: ps,
+                x: this.player.x + Math.cos(angle) * 50,
+                y: this.player.y + Math.sin(angle) * 40,
+                alpha: 0, scale: 0, duration: 600, delay: i * 30,
+                onComplete: () => ps.destroy(),
+            });
+        }
+
         // Capture references before nulling this.costumeChest
         const chestSprite = this.costumeChest.sprite;
         const chestLabel = this.costumeChest.label;

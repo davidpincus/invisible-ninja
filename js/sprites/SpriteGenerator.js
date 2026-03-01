@@ -118,26 +118,39 @@ class SpriteGenerator {
         g.fillEllipse(cx, cy + 2 * s + bounce + swimBob, 18 * s, 14 * s);
 
         // --- Ninja costume ---
-        // Belt
-        g.fillStyle(pal.belt);
-        g.fillRect(cx - 12 * s, cy - 2 * s + bounce + swimBob, 24 * s, 3 * s);
+        // Suit vest (covers torso)
+        g.fillStyle(pal.suit, 0.5);
+        g.fillEllipse(cx, cy - 1 * s + bounce + swimBob, 22 * s, 16 * s);
+        // Suit wrapping (sides)
+        g.fillStyle(pal.suit, 0.7);
+        g.fillRect(cx - 13 * s, cy - 8 * s + bounce + swimBob, 5 * s, 16 * s);
+        g.fillRect(cx + 8 * s, cy - 8 * s + bounce + swimBob, 5 * s, 16 * s);
+        // Accent trim on vest
+        g.fillStyle(pal.accent, 0.5);
+        g.fillEllipse(cx, cy - 1 * s + bounce + swimBob, 16 * s, 10 * s);
 
-        // Suit wrapping (just hints around body)
-        g.fillStyle(pal.suit, 0.6);
-        g.fillRect(cx - 13 * s, cy - 7 * s + bounce + swimBob, 3 * s, 14 * s);
-        g.fillRect(cx + 10 * s, cy - 7 * s + bounce + swimBob, 3 * s, 14 * s);
+        // Belt (thicker)
+        g.fillStyle(pal.belt);
+        g.fillRect(cx - 12 * s, cy - 3 * s + bounce + swimBob, 24 * s, 5 * s);
+        // Belt buckle
+        g.fillStyle(pal.accent);
+        g.fillRect(cx - 2 * s, cy - 2 * s + bounce + swimBob, 4 * s, 3 * s);
 
         // Head
         g.fillStyle(bodyColor);
         g.fillEllipse(cx, cy - 12 * s + bounce + swimBob, 24 * s, 20 * s);
 
-        // Ninja mask / headband
-        g.fillStyle(pal.mask, 0.8);
-        g.fillRect(cx - 12 * s, cy - 18 * s + bounce + swimBob, 24 * s, 5 * s);
-        // Trailing bands
+        // Ninja mask / headband (taller)
+        g.fillStyle(pal.mask, 0.85);
+        g.fillRect(cx - 12 * s, cy - 19 * s + bounce + swimBob, 24 * s, 7 * s);
+        // Mask accent stripe
+        g.fillStyle(pal.accent, 0.5);
+        g.fillRect(cx - 12 * s, cy - 16 * s + bounce + swimBob, 24 * s, 2 * s);
+        // Trailing bands (longer)
         if (direction === 'down' || direction === 'up') {
             g.fillStyle(pal.mask, 0.7);
-            g.fillTriangle(cx + 12 * s, cy - 16 * s + bounce + swimBob, cx + 20 * s, cy - 20 * s + bounce + swimBob, cx + 14 * s, cy - 14 * s + bounce + swimBob);
+            g.fillTriangle(cx + 12 * s, cy - 16 * s + bounce + swimBob, cx + 22 * s, cy - 22 * s + bounce + swimBob, cx + 14 * s, cy - 13 * s + bounce + swimBob);
+            g.fillTriangle(cx + 16 * s, cy - 18 * s + bounce + swimBob, cx + 24 * s, cy - 20 * s + bounce + swimBob, cx + 18 * s, cy - 14 * s + bounce + swimBob);
         }
 
         // External gills (3 on each side - axolotl signature feature!)
