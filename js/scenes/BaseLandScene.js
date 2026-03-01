@@ -901,12 +901,10 @@ class BaseLandScene extends Phaser.Scene {
                         npc.exclamation.destroy();
                         npc.exclamation = null;
                     }
-                    // Delay to let MathChallengeScene close, then dance party -> throne room
+                    // Show defeat dialog — the dance party and crown ceremony
+                    // happen later when the player completes the Halloween Palace
                     this.time.delayedCall(500, () => {
-                        this.cameras.main.fadeOut(500);
-                        this.cameras.main.once('camerafadeoutcomplete', () => {
-                            this.scene.start('DancePartyScene', { nextScene: 'ThroneRoomScene' });
-                        });
+                        this.dialogSystem.show(data.name, bossData.defeat);
                     });
                 },
             });
