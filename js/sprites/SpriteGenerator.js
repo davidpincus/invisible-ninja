@@ -5,6 +5,7 @@ class SpriteGenerator {
 
     generateAll() {
         this.generateAxolotl();
+        this.generateAxolotlTitle();
         this.generateAxolotlSwim();
         this.generateNPCs();
         this.generateSpiders();
@@ -55,6 +56,14 @@ class SpriteGenerator {
         g.destroy();
     }
 
+    generateAxolotlTitle() {
+        const scale = 4;
+        const g = this.scene.make.graphics({ add: false });
+        this._drawAxolotl(g, 'down', 0, 0, false, scale);
+        g.generateTexture('axolotl_title', 48 * scale, 56 * scale);
+        g.destroy();
+    }
+
     generateAxolotlSwim() {
         for (let costume = 0; costume < 10; costume++) {
             const directions = ['down', 'left', 'right', 'up'];
@@ -70,16 +79,16 @@ class SpriteGenerator {
         }
     }
 
-    _drawAxolotl(g, direction, frame, costume, swimming) {
-        const cx = 24, cy = 32;
-        const bounce = Math.sin(frame * Math.PI / 2) * 2;
-        const swimBob = swimming ? Math.sin(frame * Math.PI / 2) * 3 : 0;
+    _drawAxolotl(g, direction, frame, costume, swimming, s = 1) {
+        const cx = 24 * s, cy = 32 * s;
+        const bounce = Math.sin(frame * Math.PI / 2) * 2 * s;
+        const swimBob = swimming ? Math.sin(frame * Math.PI / 2) * 3 * s : 0;
         const pal = this.getCostumePalette(costume);
 
         // Shadow
         if (!swimming) {
             g.fillStyle(0x000000, 0.2);
-            g.fillEllipse(cx, 52, 28, 7);
+            g.fillEllipse(cx, 52 * s, 28 * s, 7 * s);
         }
 
         // --- Axolotl body (pink/coral) ---
@@ -90,45 +99,45 @@ class SpriteGenerator {
         // Tail
         if (direction === 'down' || direction === 'up') {
             g.fillStyle(bodyColor);
-            const tailWag = Math.sin(frame * Math.PI) * 3;
-            g.fillTriangle(cx + tailWag, cy + 18 + bounce + swimBob, cx - 6, cy + 10 + bounce + swimBob, cx + 6, cy + 10 + bounce + swimBob);
+            const tailWag = Math.sin(frame * Math.PI) * 3 * s;
+            g.fillTriangle(cx + tailWag, cy + 18 * s + bounce + swimBob, cx - 6 * s, cy + 10 * s + bounce + swimBob, cx + 6 * s, cy + 10 * s + bounce + swimBob);
         } else if (direction === 'left') {
             g.fillStyle(bodyColor);
-            g.fillTriangle(cx + 10, cy + 6 + bounce + swimBob, cx + 18, cy + 2 + bounce + swimBob, cx + 14, cy + 10 + bounce + swimBob);
+            g.fillTriangle(cx + 10 * s, cy + 6 * s + bounce + swimBob, cx + 18 * s, cy + 2 * s + bounce + swimBob, cx + 14 * s, cy + 10 * s + bounce + swimBob);
         } else {
             g.fillStyle(bodyColor);
-            g.fillTriangle(cx - 10, cy + 6 + bounce + swimBob, cx - 18, cy + 2 + bounce + swimBob, cx - 14, cy + 10 + bounce + swimBob);
+            g.fillTriangle(cx - 10 * s, cy + 6 * s + bounce + swimBob, cx - 18 * s, cy + 2 * s + bounce + swimBob, cx - 14 * s, cy + 10 * s + bounce + swimBob);
         }
 
         // Body (round, chubby)
         g.fillStyle(bodyColor);
-        g.fillEllipse(cx, cy + bounce + swimBob, 26, 22);
+        g.fillEllipse(cx, cy + bounce + swimBob, 26 * s, 22 * s);
 
         // Belly
         g.fillStyle(bellyColor);
-        g.fillEllipse(cx, cy + 2 + bounce + swimBob, 18, 14);
+        g.fillEllipse(cx, cy + 2 * s + bounce + swimBob, 18 * s, 14 * s);
 
         // --- Ninja costume ---
         // Belt
         g.fillStyle(pal.belt);
-        g.fillRect(cx - 12, cy - 2 + bounce + swimBob, 24, 3);
+        g.fillRect(cx - 12 * s, cy - 2 * s + bounce + swimBob, 24 * s, 3 * s);
 
         // Suit wrapping (just hints around body)
         g.fillStyle(pal.suit, 0.6);
-        g.fillRect(cx - 13, cy - 7 + bounce + swimBob, 3, 14);
-        g.fillRect(cx + 10, cy - 7 + bounce + swimBob, 3, 14);
+        g.fillRect(cx - 13 * s, cy - 7 * s + bounce + swimBob, 3 * s, 14 * s);
+        g.fillRect(cx + 10 * s, cy - 7 * s + bounce + swimBob, 3 * s, 14 * s);
 
         // Head
         g.fillStyle(bodyColor);
-        g.fillEllipse(cx, cy - 12 + bounce + swimBob, 24, 20);
+        g.fillEllipse(cx, cy - 12 * s + bounce + swimBob, 24 * s, 20 * s);
 
         // Ninja mask / headband
         g.fillStyle(pal.mask, 0.8);
-        g.fillRect(cx - 12, cy - 18 + bounce + swimBob, 24, 5);
+        g.fillRect(cx - 12 * s, cy - 18 * s + bounce + swimBob, 24 * s, 5 * s);
         // Trailing bands
         if (direction === 'down' || direction === 'up') {
             g.fillStyle(pal.mask, 0.7);
-            g.fillTriangle(cx + 12, cy - 16 + bounce + swimBob, cx + 20, cy - 20 + bounce + swimBob, cx + 14, cy - 14 + bounce + swimBob);
+            g.fillTriangle(cx + 12 * s, cy - 16 * s + bounce + swimBob, cx + 20 * s, cy - 20 * s + bounce + swimBob, cx + 14 * s, cy - 14 * s + bounce + swimBob);
         }
 
         // External gills (3 on each side - axolotl signature feature!)
@@ -136,79 +145,79 @@ class SpriteGenerator {
         if (direction !== 'up') {
             g.fillStyle(gillColor);
             gillOffsets.forEach((oy, i) => {
-                const gSize = 4 - i * 0.5;
-                const wobble = Math.sin(frame * Math.PI / 2 + i) * 2;
+                const gSize = (4 - i * 0.5) * s;
+                const wobble = Math.sin(frame * Math.PI / 2 + i) * 2 * s;
                 // Left gills
-                g.fillEllipse(cx - 12 - wobble, cy + oy + bounce + swimBob, gSize * 2, gSize);
+                g.fillEllipse(cx - 12 * s - wobble, cy + oy * s + bounce + swimBob, gSize * 2, gSize);
                 // Right gills
-                g.fillEllipse(cx + 12 + wobble, cy + oy + bounce + swimBob, gSize * 2, gSize);
+                g.fillEllipse(cx + 12 * s + wobble, cy + oy * s + bounce + swimBob, gSize * 2, gSize);
             });
             // Gill tips
             g.fillStyle(0xff4081);
             gillOffsets.forEach((oy, i) => {
-                const wobble = Math.sin(frame * Math.PI / 2 + i) * 2;
-                g.fillCircle(cx - 14 - wobble, cy + oy + bounce + swimBob, 1.5);
-                g.fillCircle(cx + 14 + wobble, cy + oy + bounce + swimBob, 1.5);
+                const wobble = Math.sin(frame * Math.PI / 2 + i) * 2 * s;
+                g.fillCircle(cx - 14 * s - wobble, cy + oy * s + bounce + swimBob, 1.5 * s);
+                g.fillCircle(cx + 14 * s + wobble, cy + oy * s + bounce + swimBob, 1.5 * s);
             });
         }
 
         // Face
         if (direction === 'down' || direction === 'left' || direction === 'right') {
-            const faceOX = direction === 'left' ? -3 : direction === 'right' ? 3 : 0;
+            const faceOX = (direction === 'left' ? -3 : direction === 'right' ? 3 : 0) * s;
 
             // Big sparkly eyes
             g.fillStyle(0xffffff);
-            g.fillEllipse(cx - 5 + faceOX, cy - 14 + bounce + swimBob, 9, 10);
-            g.fillEllipse(cx + 5 + faceOX, cy - 14 + bounce + swimBob, 9, 10);
+            g.fillEllipse(cx - 5 * s + faceOX, cy - 14 * s + bounce + swimBob, 9 * s, 10 * s);
+            g.fillEllipse(cx + 5 * s + faceOX, cy - 14 * s + bounce + swimBob, 9 * s, 10 * s);
             // Pupils
             g.fillStyle(0x1a1a2e);
-            g.fillEllipse(cx - 4 + faceOX, cy - 13 + bounce + swimBob, 5, 6);
-            g.fillEllipse(cx + 6 + faceOX, cy - 13 + bounce + swimBob, 5, 6);
+            g.fillEllipse(cx - 4 * s + faceOX, cy - 13 * s + bounce + swimBob, 5 * s, 6 * s);
+            g.fillEllipse(cx + 6 * s + faceOX, cy - 13 * s + bounce + swimBob, 5 * s, 6 * s);
             // Eye sparkles (big sparkly!)
             g.fillStyle(0xffffff);
-            g.fillCircle(cx - 3 + faceOX, cy - 16 + bounce + swimBob, 2);
-            g.fillCircle(cx + 7 + faceOX, cy - 16 + bounce + swimBob, 2);
-            g.fillCircle(cx - 5 + faceOX, cy - 12 + bounce + swimBob, 1);
-            g.fillCircle(cx + 5 + faceOX, cy - 12 + bounce + swimBob, 1);
+            g.fillCircle(cx - 3 * s + faceOX, cy - 16 * s + bounce + swimBob, 2 * s);
+            g.fillCircle(cx + 7 * s + faceOX, cy - 16 * s + bounce + swimBob, 2 * s);
+            g.fillCircle(cx - 5 * s + faceOX, cy - 12 * s + bounce + swimBob, 1 * s);
+            g.fillCircle(cx + 5 * s + faceOX, cy - 12 * s + bounce + swimBob, 1 * s);
 
             // Cute wide smile
-            g.lineStyle(1.5, 0xe91e63, 0.8);
+            g.lineStyle(1.5 * s, 0xe91e63, 0.8);
             g.beginPath();
-            g.arc(cx + faceOX, cy - 7 + bounce + swimBob, 5, 0.1, Math.PI - 0.1);
+            g.arc(cx + faceOX, cy - 7 * s + bounce + swimBob, 5 * s, 0.1, Math.PI - 0.1);
             g.strokePath();
 
             // Tiny nostrils
             g.fillStyle(0xe91e63, 0.5);
-            g.fillCircle(cx - 2 + faceOX, cy - 9 + bounce + swimBob, 1);
-            g.fillCircle(cx + 2 + faceOX, cy - 9 + bounce + swimBob, 1);
+            g.fillCircle(cx - 2 * s + faceOX, cy - 9 * s + bounce + swimBob, 1 * s);
+            g.fillCircle(cx + 2 * s + faceOX, cy - 9 * s + bounce + swimBob, 1 * s);
 
             // Blush
             g.fillStyle(0xff80ab, 0.3);
-            g.fillCircle(cx - 9 + faceOX, cy - 9 + bounce + swimBob, 3);
-            g.fillCircle(cx + 9 + faceOX, cy - 9 + bounce + swimBob, 3);
+            g.fillCircle(cx - 9 * s + faceOX, cy - 9 * s + bounce + swimBob, 3 * s);
+            g.fillCircle(cx + 9 * s + faceOX, cy - 9 * s + bounce + swimBob, 3 * s);
         } else {
             // Back of head
             g.fillStyle(0xf48fb1);
-            g.fillEllipse(cx, cy - 12 + bounce + swimBob, 18, 14);
+            g.fillEllipse(cx, cy - 12 * s + bounce + swimBob, 18 * s, 14 * s);
         }
 
         // Little feet/legs
         if (!swimming) {
             g.fillStyle(bodyColor);
             if (direction === 'left') {
-                g.fillEllipse(cx + 6, cy + 12 + bounce, 6, 4);
+                g.fillEllipse(cx + 6 * s, cy + 12 * s + bounce, 6 * s, 4 * s);
             } else if (direction === 'right') {
-                g.fillEllipse(cx - 6, cy + 12 + bounce, 6, 4);
+                g.fillEllipse(cx - 6 * s, cy + 12 * s + bounce, 6 * s, 4 * s);
             } else {
-                g.fillEllipse(cx - 8, cy + 12 + bounce, 6, 4);
-                g.fillEllipse(cx + 8, cy + 12 + bounce, 6, 4);
+                g.fillEllipse(cx - 8 * s, cy + 12 * s + bounce, 6 * s, 4 * s);
+                g.fillEllipse(cx + 8 * s, cy + 12 * s + bounce, 6 * s, 4 * s);
             }
         }
 
         // Swimming ripple effect
         if (swimming) {
             g.fillStyle(0xffffff, 0.3);
-            g.fillEllipse(cx, cy + 14 + swimBob, 20 + Math.sin(frame * Math.PI) * 4, 4);
+            g.fillEllipse(cx, cy + 14 * s + swimBob, (20 + Math.sin(frame * Math.PI) * 4) * s, 4 * s);
         }
     }
 

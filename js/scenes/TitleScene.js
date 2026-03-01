@@ -55,7 +55,7 @@ class TitleScene extends Phaser.Scene {
         });
 
         // Axolotl character
-        const axolotl = this.add.image(w / 2, 390, 'axolotl_stand').setScale(5);
+        const axolotl = this.add.image(w / 2, 390, 'axolotl_title').setScale(1.25);
         this.tweens.add({
             targets: axolotl, y: 380, duration: 1500,
             yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
@@ -119,6 +119,32 @@ class TitleScene extends Phaser.Scene {
                 color: '#ffd700',
             }).setOrigin(0.5);
         }
+
+        // Cheat code: typing "Madeline" skips to Halloween Palace
+        let cheatBuffer = '';
+        this.input.keyboard.on('keydown', (event) => {
+            if (event.key.length === 1) {
+                cheatBuffer += event.key.toLowerCase();
+                if (cheatBuffer.length > 8) cheatBuffer = cheatBuffer.slice(-8);
+                if (cheatBuffer === 'madeline') {
+                    cheatBuffer = '';
+                    if (!progressTracker.isWeblordDefeated()) {
+                        const lands = ['easter', 'hannukah', 'christmas', 'thanksgiving', 'megamix'];
+                        lands.forEach(land => {
+                            if (!progressTracker.isLandUnlocked(land)) {
+                                progressTracker.data.unlockedLands.push(land);
+                            }
+                        });
+                        progressTracker.data.totalStars = Math.max(progressTracker.data.totalStars, 42);
+                        progressTracker.setWeblordDefeated();
+                    }
+                    this.cameras.main.fadeOut(400, 0, 0, 0);
+                    this.cameras.main.once('camerafadeoutcomplete', () => {
+                        this.scene.start('HalloweenPalaceScene');
+                    });
+                }
+            }
+        });
 
         // Subtitle
         this.add.text(w / 2, h - 30, "An Axolotl Adventure for Madeline", {
