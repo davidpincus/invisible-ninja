@@ -756,14 +756,18 @@ class BaseLandScene extends Phaser.Scene {
         progressTracker.collectPostGameOutfit(this.landKey, pgData.costumeIndex);
         this.currentCostume = pgData.costumeIndex;
 
+        // Capture references before nulling this.costumeChest
+        const chestSprite = this.costumeChest.sprite;
+        const chestLabel = this.costumeChest.label;
+
         // Animate chest
         this.tweens.add({
-            targets: this.costumeChest.sprite,
-            y: this.costumeChest.sprite.y - 30, alpha: 0, scale: 1.5,
+            targets: chestSprite,
+            y: chestSprite.y - 30, alpha: 0, scale: 1.5,
             duration: 400,
             onComplete: () => {
-                this.costumeChest.sprite.destroy();
-                this.costumeChest.label.destroy();
+                chestSprite.destroy();
+                chestLabel.destroy();
             },
         });
 
